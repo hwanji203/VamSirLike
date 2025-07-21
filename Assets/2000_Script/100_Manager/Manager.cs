@@ -2,15 +2,15 @@ using UnityEngine;
 
 public class Manager : MonoBehaviour
 {
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
-        
+        SetLogManager();
     }
 
-    // Update is called once per frame
-    void Update()
+    public static LogManager Log { get; private set; }
+
+    public void SetLogManager()
     {
-        
+        Log = transform.GetComponentInChildren<LogManager>();
     }
 }

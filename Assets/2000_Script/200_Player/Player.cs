@@ -1,7 +1,44 @@
+using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class Player : MonoBehaviour
 {
+    public int Hp { get; private set; }
+
+
+    public Dictionary<AtkReason, int> AtkReasonDictionary = new Dictionary<AtkReason, int>();
+    private int mAtk;
+    public int Atk
+    {
+        get
+        {
+            mAtk = 0;
+            foreach (var atkValue in AtkReasonDictionary)
+            {
+                mAtk += atkValue.Value;
+            }
+
+            return mAtk;
+        }
+    }
+
+    public Dictionary<MoveSpeedReason, int> MoveSpeedReasonDictionary = new Dictionary<MoveSpeedReason, int>();
+    private int mMoveSpeed;
+    public int MoveSpeed
+    {
+        get
+        {
+            mMoveSpeed = 0;
+            foreach (var atkValue in MoveSpeedReasonDictionary)
+            {
+                mMoveSpeed += atkValue.Value;
+            }
+
+            return mMoveSpeed;
+        }
+    }
+
     private void Update()
     {
         PlayerMoveInput();
@@ -9,21 +46,52 @@ public class Player : MonoBehaviour
 
     private void PlayerMoveInput()
     {
-        if (Input.GetKeyDown(KeyCode.UpArrow) == true)
+        // 키 입력
+        if (Input.GetKey(KeyCode.UpArrow) == true)
         {
-            transform.position += Vector3.up * Time.deltaTime;
+            transform.position += (Vector3.up * Time.deltaTime) * MoveSpeed;
         }
-        if (Input.GetKeyDown(KeyCode.DownArrow) == true)
+        if (Input.GetKey(KeyCode.DownArrow) == true)
         {
-            transform.position += Vector3.down * Time.deltaTime;
+            transform.position += Vector3.down * Time.deltaTime * MoveSpeed;
         }
-        if (Input.GetKeyDown(KeyCode.LeftArrow) == true)
+        if (Input.GetKey(KeyCode.LeftArrow) == true)
         {
-            transform.position += Vector3.left * Time.deltaTime;
+            transform.position += Vector3.left * Time.deltaTime * MoveSpeed;
         }
-        if (Input.GetKeyDown(KeyCode.RightArrow) == true)
+        if (Input.GetKey(KeyCode.RightArrow) == true)
         {
-            transform.position += Vector3.right * Time.deltaTime;
+            transform.position += Vector3.right * Time.deltaTime * MoveSpeed;
         }
+    }
+
+    public void AddAtkReason(AtkReason reason, int value)
+    {
+        if (AtkReasonDictionary.TryAdd(reason, value) == false)
+        {
+            // Dic에 넣는 것에 실패했다 => 이미 해당 Key 값이 존재
+            AtkReasonDictionary[reason] = value;
+
+        }
+
+#if Log
+        Log.Message(LogType.StatAtk, $"공격력 수치 변화 {value}");
+#endif
+    }
+
+    public void AddMoveSpeedReason(MoveSpeedReason reason, int value)
+    {
+        if (MoveSpeedReasonDictionary.TryAdd(reason, value) == false)
+        {
+            // Dic에 넣는 것에 실패했다 => 이미 해당 Key 값이 존재
+            MoveSpeedReasonDictionary[reason] = value;
+
+        }
+
+        SceneManager.LoadScene("sdf", LoadSceneMode.Additive);
+
+#if Log
+        Log.Message(LogType.StatMoveSpeed, $"이동속도 수치 변화 {value}");
+#endif
     }
 }
